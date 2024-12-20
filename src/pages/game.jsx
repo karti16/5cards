@@ -2,10 +2,11 @@ import { NavLink, useParams } from 'react-router';
 import Header from '../components/header';
 import { Button } from '@/components/ui/button';
 import { players } from '../db/schema';
-import { asc, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { useEffect, useState } from 'react';
 import { db } from '../db';
 import { cn } from '@/lib/utils';
+import { Check, FileInput } from 'lucide-react';
 
 export default function Game() {
   let params = useParams();
@@ -14,7 +15,7 @@ export default function Game() {
     const data = await db
       .select()
       .from(players)
-      .where(eq(players.group_id, params.groupId))
+      .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)))
       .orderBy(asc(players.points));
     _setPlayers(data);
   };
@@ -28,7 +29,17 @@ export default function Game() {
       <Header groupId={params.groupId} />
       <div className='flex justify-between pt-10'>
         <NavLink to='add-scores'>
-          <Button variant=''>Enter Score</Button>
+          <Button variant='ghost'>
+            {' '}
+            <FileInput />
+            Enter Score
+          </Button>
+        </NavLink>
+        <NavLink to='select-players'>
+          <Button variant='ghost'>
+            <Check />
+            Select players
+          </Button>
         </NavLink>
       </div>
       <div className='pt-10'>

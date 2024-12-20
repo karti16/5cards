@@ -11,6 +11,7 @@ export const players = sqliteTable(
     id: text().notNull().primaryKey(),
     group_id: text('group_id').references(() => groups.group_id),
     player_name: text().notNull(),
+    isPlaying: integer({ mode: 'boolean' }),
     points: int(),
   },
   (t) => ({

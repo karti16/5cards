@@ -1,44 +1,35 @@
 import { Button } from '@/components/ui/button';
-import { ArrowBigLeft, Save, X } from 'lucide-react';
+import { ArrowBigLeft, Check, Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { db } from '../db';
 import { players } from '../db/schema';
-import { and, eq, sql } from 'drizzle-orm';
-import { usePlayersStore } from '../store';
-import { Input } from '@/components/ui/input';
+import { eq, sql } from 'drizzle-orm';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
-function AddScores() {
+function SelectPlayers() {
   let params = useParams();
   const navigate = useNavigate();
   const [_players, _setPlayers] = useState([]);
-  const { s_setPlayers } = usePlayersStore();
   const { toast } = useToast();
 
   const fetchPlayers = async () => {
-    const data = await db
-      .select()
-      .from(players)
-      .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)));
+    const data = await db.select().from(players).where(eq(players.group_id, params.groupId));
     _setPlayers(data.map((i) => ({ ...i, current_points: '' })));
-    s_setPlayers(data.map((i) => ({ ...i, current_points: '' })));
   };
 
   useEffect(() => {
     fetchPlayers();
   }, [params]);
 
-  const handleCurrentScore = (e, id) => {
-    const { value } = e.target;
-    const re = /^[0-9\b]+$/;
-    if (value === '' || (re.test(value) && value >= 0 && value <= 100)) {
-      _setPlayers(_players.map((user) => (user.id === id ? { ...user, current_points: value } : user)));
-    }
-  };
-
   const handleSaveScore = async () => {
-    const data = _players.map((i) => ({ id: i.id, points: +i.points + +i.current_points, player_name: i.player_name }));
+    const data = _players.map((i) => ({
+      id: i.id,
+      points: i.isPlaying ? +i.points + +i.current_points : null,
+      player_name: i.player_name,
+      isPlaying: i.isPlaying,
+    }));
     console.log(data);
     try {
       await db.transaction(async (tx) => {
@@ -48,27 +39,34 @@ function AddScores() {
             .values(data)
             .onConflictDoUpdate({
               target: players.id,
-              set: { points: sql`excluded.points`, player_name: sql`excluded.player_name` },
+              set: {
+                points: sql`excluded.points`,
+                player_name: sql`excluded.player_name`,
+                isPlaying: sql`excluded.isPlaying`,
+              },
             }));
       });
 
-      // fetchPlayers();
       navigate(-1);
     } catch (err) {
       //
       console.log(err.message);
       toast({
         variant: 'red',
-        title: 'Name already exist',
+        title: 'Cannot select player',
       });
     }
+  };
+
+  const handleSelect = (id, isPlaying) => {
+    _setPlayers(_players.map((user) => (user.id === id ? { ...user, isPlaying: !isPlaying } : user)));
   };
 
   return (
     <div className='p-6 '>
       <div className='flex gap-6 pt-10 pb-10'>
         <ArrowBigLeft className='text-green-600 cursor-pointer' onClick={() => navigate(-1)} />
-        Enter Scores
+        Select players
       </div>
 
       <div className='flex flex-col align-bottom pb-4'>
@@ -78,15 +76,16 @@ function AddScores() {
           ) : (
             _players.map((i) => {
               return (
-                <div key={i.id} className='flex  items-center gap-1'>
-                  <Input value={i.player_name} disabled={true} />
-                  <Input value={i.points} disabled={true} />
-                  <Input
-                    inputMode='numeric'
-                    value={i.current_points}
-                    onChange={(e) => handleCurrentScore(e, i.id)}
-                    disabled={i.points >= 100}
-                  />
+                <div
+                  key={i.id}
+                  className={cn(
+                    'flex items-center gap-1  w-full p-2 rounded-md cursor-pointer',
+                    i.isPlaying ? 'bg-green-700' : 'border-green-500 border',
+                  )}
+                  onClick={() => handleSelect(i.id, i.isPlaying)}
+                >
+                  {i.isPlaying && <Check />}
+                  {i.player_name}
                 </div>
               );
             })
@@ -100,7 +99,7 @@ function AddScores() {
             </Button>
             <Button onClick={handleSaveScore}>
               <Save />
-              Save Scores
+              Save Players
             </Button>
           </div>
         )}
@@ -109,4 +108,4 @@ function AddScores() {
   );
 }
 
-export default AddScores;
+export default SelectPlayers;
