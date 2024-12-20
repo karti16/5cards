@@ -80,7 +80,7 @@ function SelectPlayers() {
                   key={i.id}
                   className={cn(
                     'flex items-center gap-1  w-full p-2 rounded-md cursor-pointer',
-                    i.isPlaying ? 'bg-green-700' : 'border-green-500 border',
+                    i.isPlaying ? 'bg-green-700' : 'border-green-500',
                   )}
                   onClick={() => handleSelect(i.id, i.isPlaying)}
                 >

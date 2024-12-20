@@ -39,20 +39,20 @@ function Settings() {
   };
   return (
     <div className='p-6'>
-      <div className='flex gap-6 pt-10 pb-10'>
+      <div className='flex gap-6 pt-10 pb-10 text-green-600'>
         <ArrowBigLeft className='text-green-600 cursor-pointer' onClick={() => navigate(-1)} />
         Settings
       </div>
       <div className='flex flex-col items-start'>
-        <Button variant='outlined' className='text-green-400' onClick={() => navigate('add-players')}>
+        <Button variant='outlined' onClick={() => navigate('add-players')}>
           <Plus />
           Manage players
         </Button>
-        <Button variant='outlined' className='text-green-400' onClick={() => setClearDialogOpen(true)}>
+        <Button variant='outlined' onClick={() => setClearDialogOpen(true)}>
           <Trash2 />
           Clear game
         </Button>
-        <Button variant='outlined' className='text-green-400' onClick={() => setDeleteGroupDialogOpen(true)}>
+        <Button variant='outlined' onClick={() => setDeleteGroupDialogOpen(true)}>
           <CircleX />
           Delete group
         </Button>

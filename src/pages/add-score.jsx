@@ -79,8 +79,8 @@ function AddScores() {
             _players.map((i) => {
               return (
                 <div key={i.id} className='flex  items-center gap-1'>
-                  <Input value={i.player_name} disabled={true} />
-                  <Input value={i.points} disabled={true} />
+                  <Input value={i.player_name} disabled={true} className='border-0' />
+                  <Input value={i.points} disabled={true} className='border-0' />
                   <Input
                     inputMode='numeric'
                     value={i.current_points}

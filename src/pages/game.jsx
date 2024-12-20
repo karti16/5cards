@@ -31,13 +31,13 @@ export default function Game() {
         <NavLink to='add-scores'>
           <Button variant='ghost'>
             {' '}
-            <FileInput />
+            <FileInput className='text-green-500 text-lg flex gap-2' />
             Enter Score
           </Button>
         </NavLink>
         <NavLink to='select-players'>
           <Button variant='ghost'>
-            <Check />
+            <Check className='text-green-500 text-lg flex gap-2' />
             Select players
           </Button>
         </NavLink>
@@ -54,12 +54,16 @@ export default function Game() {
                   <div
                     key={i.id}
                     className={cn(
-                      'flex gap-5 content-center items-center pl-2 p-3',
-                      index === 0 && _players.some((i) => i.points) && 'bg-green-600 rounded-2xl',
+                      'flex gap-5 content-center items-center pl-2 p-3 justify-between',
+                      index === 0 &&
+                        _players.some((i) => i.points) &&
+                        'border border-green-600 bg-[#14582679] rounded-2xl',
                     )}
                   >
-                    <div className='items-center content-center text-center flex'>{i.points}</div>
-                    <div className=''>{i.player_name}</div>
+                    <div className='flex gap-5 content-center  items-center'>
+                      <div className='items-center content-center text-center flex'>{i.points}</div>
+                      <div className=''>{i.player_name}</div>
+                    </div>
                     {index === 0 && _players.some((i) => i.points) && <div>🎖🎖🎖</div>}
                   </div>
                 );
