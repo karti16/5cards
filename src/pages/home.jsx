@@ -6,6 +6,7 @@ import { groups } from '../db/schema';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router';
 import { useGroupIdStore } from '../store/index';
+import LoadingSpinner from '../components/loadingSpinner';
 
 function Home() {
   let navigate = useNavigate();
@@ -13,6 +14,7 @@ function Home() {
   const [groupId, setGroupId] = useState('');
   const [notValidGroupId, setNotValidGroupId] = useState(null);
   const { s_setGroupId } = useGroupIdStore();
+  const [loading, setLoading] = useState(false);
 
   const handleNewGame = async () => {
     if (!groupId) return;
@@ -47,6 +49,7 @@ function Home() {
   const findGame = async () => {
     setNotValidGroupId(false);
     setIsGroupExist(false);
+    setLoading(true);
     try {
       const tempGroupExists = await isGroupInDB(groupId);
       console.log(tempGroupExists);
@@ -56,9 +59,11 @@ function Home() {
         navigate(`/group/${groupId}`);
       } else {
         setIsGroupExist(true);
+        setLoading(false);
       }
     } catch {
       //
+    } finally {
     }
   };
 
@@ -77,8 +82,20 @@ function Home() {
       {!!notValidGroupId && <p className='text-red-300 text-sm pt-2'>An alphanumeric word with 🖐 5 characters</p>}
       {!!isGroupExist && <p className='text-red-500 text-sm pt-2'>Choose another name</p>}
       <div className='card flex gap-2'>
-        <Button variant='outline' onClick={findGame} className='focus:ring-2 focus:ring-green-800'>
-          Find group
+        <Button
+          variant='outline'
+          onClick={findGame}
+          className='focus:ring-2 focus:ring-green-800 grid [grid-template-areas:"stack"] place-content-center'
+        >
+          <span
+            aria-label='Find group'
+            className={cn('[grid-area:stack]', loading ? '[visibility:visible]' : '[visibility:hidden]')}
+          >
+            <LoadingSpinner />
+          </span>
+          <span className={cn('[grid-area:stack]', loading ? '[visibility:hidden]' : '[visibility:visible]')}>
+            Find group
+          </span>
         </Button>
         <Button onClick={handleNewGame} className='focus:ring-2 focus:ring-green-800 bg-green-600'>
           New group
