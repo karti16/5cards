@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from '@/components/ui/button';
 import { ArrowBigLeft, CirclePlus, Save, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';

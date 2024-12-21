@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowBigLeft, Check, CircleCheck, Save, X } from 'lucide-react';
+import { ArrowBigLeft, CircleCheck, Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { db } from '../db';
