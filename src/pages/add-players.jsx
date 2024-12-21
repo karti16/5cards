@@ -91,7 +91,7 @@ function AddPlayers() {
             return (
               <div key={i.id} className='flex justify-between items-center gap-6'>
                 <Input value={i.player_name} onChange={(e) => handlePlayer(e, i.id)} />{' '}
-                <Button variant='outlined' className='text-gray-400' onClick={() => handleRemovePlayer(i.id)}>
+                <Button variant='ghost' className='text-gray-400' onClick={() => handleRemovePlayer(i.id)}>
                   <Trash2 />
                 </Button>
               </div>

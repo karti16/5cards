@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowBigLeft, Check, Save, X } from 'lucide-react';
+import { ArrowBigLeft, Check, CircleCheck, Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { db } from '../db';
@@ -70,7 +70,7 @@ function SelectPlayers() {
       </div>
 
       <div className='flex flex-col align-bottom pb-4'>
-        <div className='flex flex-col items-start pt-4 pb-4 gap-2 flex-1'>
+        <div className='flex flex-col items-start pt-4 pb-6 gap-2 flex-1'>
           {_players.length === 0 ? (
             <p>No players found</p>
           ) : (
@@ -78,13 +78,10 @@ function SelectPlayers() {
               return (
                 <div
                   key={i.id}
-                  className={cn(
-                    'flex items-center gap-1  w-full p-2 rounded-md cursor-pointer',
-                    i.isPlaying ? 'bg-green-700' : 'border-green-500',
-                  )}
+                  className={cn('flex items-center gap-3  w-full p-2 rounded-md cursor-pointer')}
                   onClick={() => handleSelect(i.id, i.isPlaying)}
                 >
-                  {i.isPlaying && <Check />}
+                  <CircleCheck className={cn(i.isPlaying ? 'text-green-700' : 'text-gray-900')} />
                   {i.player_name}
                 </div>
               );

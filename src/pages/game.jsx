@@ -29,14 +29,14 @@ export default function Game() {
       <Header groupId={params.groupId} />
       <div className='flex justify-between pt-10'>
         <NavLink to='add-scores'>
-          <Button variant='ghost'>
+          <Button variant='ghost' className='focus:ring-2 focus:ring-green-800'>
             {' '}
             <FileInput className='text-green-500 text-lg flex gap-2' />
             Enter Score
           </Button>
         </NavLink>
         <NavLink to='select-players'>
-          <Button variant='ghost'>
+          <Button variant='ghost' className='focus:ring-2 focus:ring-green-800'>
             <Check className='text-green-500 text-lg flex gap-2' />
             Select players
           </Button>

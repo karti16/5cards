@@ -43,16 +43,20 @@ function Settings() {
         <ArrowBigLeft className='text-green-600 cursor-pointer' onClick={() => navigate(-1)} />
         Settings
       </div>
-      <div className='flex flex-col items-start'>
-        <Button variant='outlined' onClick={() => navigate('add-players')}>
+      <div className='flex flex-col items-start gap-4'>
+        <Button variant='ghost' onClick={() => navigate('add-players')} className='focus:ring-2 focus:ring-green-800'>
           <Plus />
           Manage players
         </Button>
-        <Button variant='outlined' onClick={() => setClearDialogOpen(true)}>
+        <Button variant='ghost' onClick={() => setClearDialogOpen(true)} className='focus:ring-2 focus:ring-green-800'>
           <Trash2 />
           Clear game
         </Button>
-        <Button variant='outlined' onClick={() => setDeleteGroupDialogOpen(true)}>
+        <Button
+          variant='ghost'
+          onClick={() => setDeleteGroupDialogOpen(true)}
+          className='focus:ring-2 focus:ring-green-800'
+        >
           <CircleX />
           Delete group
         </Button>

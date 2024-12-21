@@ -66,7 +66,7 @@ function Home() {
     <div className='flex flex-col min-h-screen justify-center items-center p-6'>
       <h1 className='pb-10 text-[30px]'>
         {' '}
-        🖐 <span className='text-[#01ff4579]'>5 cards</span>{' '}
+        🖐 <span className='text-green-500'>5 cards</span>{' '}
       </h1>
       <Input
         onChange={handleInput}
@@ -77,10 +77,12 @@ function Home() {
       {!!notValidGroupId && <p className='text-red-300 text-sm pt-2'>An alphanumeric word with 🖐 5 characters</p>}
       {!!isGroupExist && <p className='text-red-500 text-sm pt-2'>Choose another name</p>}
       <div className='card flex gap-2'>
-        <Button variant='outline' onClick={findGame}>
+        <Button variant='outline' onClick={findGame} className='focus:ring-2 focus:ring-green-800'>
           Find group
         </Button>
-        <Button onClick={handleNewGame}>New group</Button>
+        <Button onClick={handleNewGame} className='focus:ring-2 focus:ring-green-800 bg-green-600'>
+          New group
+        </Button>
       </div>
       <div className='text-sm text-gray-500'>
         <p>
