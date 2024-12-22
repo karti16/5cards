@@ -8,6 +8,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { usePlayersStore } from '../store';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '../lib/utils';
 
 function AddScores() {
   let params = useParams();
@@ -76,20 +77,58 @@ function AddScores() {
           {_players.length === 0 ? (
             <p>No players found</p>
           ) : (
-            _players.map((i) => {
-              return (
-                <div key={i.id} className='flex  items-center gap-1'>
-                  <Input value={i.player_name} disabled={true} className='border-0' />
-                  <Input value={i.points} disabled={true} className='border-0' />
-                  <Input
-                    inputMode='numeric'
-                    value={i.current_points}
-                    onChange={(e) => handleCurrentScore(e, i.id)}
-                    disabled={i.points >= 100}
-                  />
-                </div>
-              );
-            })
+            <>
+              {_players
+                .filter((i) => i.points < 100)
+                .map((i) => {
+                  const isOutOfGame = i.points >= 100;
+                  return (
+                    <div key={i.id} className='flex  items-center gap-1'>
+                      <Input
+                        value={i.player_name}
+                        disabled={true}
+                        className={cn('border-0', isOutOfGame && 'line-through')}
+                      />
+                      <Input
+                        value={i.points}
+                        disabled={true}
+                        className={cn('border-0', isOutOfGame && 'line-through')}
+                      />
+                      <Input
+                        inputMode='numeric'
+                        value={i.current_points}
+                        onChange={(e) => handleCurrentScore(e, i.id)}
+                        disabled={isOutOfGame}
+                      />
+                    </div>
+                  );
+                })}
+              {_players
+                .filter((i) => i.points >= 100)
+                .map((i) => {
+                  const isOutOfGame = i.points >= 100;
+                  return (
+                    <div key={i.id} className='flex  items-center gap-1'>
+                      <Input
+                        value={i.player_name}
+                        disabled={true}
+                        className={cn('border-0', isOutOfGame && 'line-through text-gray-600')}
+                      />
+                      <Input
+                        value={i.points}
+                        disabled={true}
+                        className={cn('border-0', isOutOfGame && 'line-through text-gray-600')}
+                      />
+                      <Input
+                        inputMode='numeric'
+                        value={i.current_points}
+                        onChange={(e) => handleCurrentScore(e, i.id)}
+                        disabled={isOutOfGame}
+                      />
+                    </div>
+                  );
+                })}
+            </>
           )}
         </div>
         {_players.length > 0 && (

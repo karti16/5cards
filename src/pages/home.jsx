@@ -41,7 +41,7 @@ function Home() {
 
   const handleInput = (e) => {
     const { value } = e.target;
-    setGroupId(value);
+    setGroupId(value.toLowerCase());
     setIsGroupExist(false);
     setNotValidGroupId(false);
   };
