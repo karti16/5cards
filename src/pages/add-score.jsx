@@ -119,12 +119,15 @@ function AddScores() {
                         disabled={true}
                         className={cn('border-0', isOutOfGame && 'line-through text-gray-600')}
                       />
-                      <Input
-                        inputMode='numeric'
-                        value={i.current_points}
-                        onChange={(e) => handleCurrentScore(e, i.id)}
-                        disabled={isOutOfGame}
-                      />
+                      {
+                        <Input
+                          inputMode='numeric'
+                          value={i.current_points}
+                          onChange={(e) => handleCurrentScore(e, i.id)}
+                          disabled={isOutOfGame}
+                          className={cn(isOutOfGame && 'border-0')}
+                        />
+                      }
                     </div>
                   );
                 })}
