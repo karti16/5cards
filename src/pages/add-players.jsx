@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from '@/components/ui/button';
-import { ArrowBigLeft, CirclePlus, Save, Trash2, X } from 'lucide-react';
+import { ArrowBigLeft, CirclePlus, Info, Save, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { NavLink, useNavigate, useParams } from 'react-router';
 import { db } from '../db';
 import { players } from '../db/schema';
 import { eq, inArray, sql } from 'drizzle-orm';
@@ -91,13 +91,19 @@ function AddPlayers() {
           {_players.map((i) => {
             return (
               <div key={i.id} className='flex justify-between items-center gap-6'>
-                <Input value={i.player_name} onChange={(e) => handlePlayer(e, i.id)} />{' '}
+                <Input value={i.player_name} onChange={(e) => handlePlayer(e, i.id)} />
+                <NavLink to={`/group/${params.groupId}/player/${i.id}`}>
+                  <Button variant='ghost' className='text-gray-400'>
+                    <Info />
+                  </Button>
+                </NavLink>
                 <Button variant='ghost' className='text-gray-400' onClick={() => handleRemovePlayer(i.id)}>
                   <Trash2 />
                 </Button>
               </div>
             );
           })}
+
           <Button variant='secondary' onClick={handleAddPlayer} className='mb-8'>
             <CirclePlus />
             Add player

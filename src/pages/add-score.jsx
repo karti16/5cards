@@ -3,8 +3,8 @@ import { ArrowBigLeft, Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { db } from '../db';
-import { players } from '../db/schema';
-import { and, eq, sql } from 'drizzle-orm';
+import { players, rounds } from '../db/schema';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { usePlayersStore } from '../store';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -14,20 +14,39 @@ function AddScores() {
   let params = useParams();
   const navigate = useNavigate();
   const [_players, _setPlayers] = useState([]);
-  const { s_setPlayers } = usePlayersStore();
   const { toast } = useToast();
+  const [currentRoundCount, setCurrentRoundCount] = useState(null);
 
   const fetchPlayers = async () => {
     const data = await db
-      .select()
+      .select({
+        player_name: players.player_name,
+        id: players.id,
+        points: sql`cast(sum(${rounds.points}) as int)`,
+        group_id: players.group_id,
+      })
       .from(players)
-      .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)));
+      .leftJoin(rounds, eq(players.id, rounds.player_id))
+      .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)))
+      .groupBy(players.id);
+
+    console.log(data);
     _setPlayers(data.map((i) => ({ ...i, current_points: '' })));
-    s_setPlayers(data.map((i) => ({ ...i, current_points: '' })));
+  };
+
+  const fetchCurrentRoundCount = async () => {
+    const data = await db
+      .select({ round_count: rounds.round_count })
+      .from(rounds)
+      .where(eq(rounds.group_id, params.groupId))
+      .orderBy(desc(rounds.id));
+
+    setCurrentRoundCount(data[0]?.round_count ?? 0);
   };
 
   useEffect(() => {
     fetchPlayers();
+    fetchCurrentRoundCount();
   }, [params]);
 
   const handleCurrentScore = (e, id) => {
@@ -39,18 +58,31 @@ function AddScores() {
   };
 
   const handleSaveScore = async () => {
-    const data = _players.map((i) => ({ id: i.id, points: +i.points + +i.current_points, player_name: i.player_name }));
+    const data = _players.map((i) => ({
+      round_count: currentRoundCount + 1,
+      group_id: i.group_id,
+      player_id: i.id,
+      points: i.current_points === '' ? null : +i.current_points,
+    }));
+
+    const playersWonRounds = data.filter((i) => i.points === 0).map((i) => i.player_id);
+    const playersWrongClaims = data.filter((i) => i.points === 40).map((i) => i.player_id);
+
+    console.log({ playersWonRounds });
     console.log(data);
     try {
       await db.transaction(async (tx) => {
-        data.length &&
+        data.length && (await tx.insert(rounds).values(data));
+        playersWonRounds.length &&
           (await tx
-            .insert(players)
-            .values(data)
-            .onConflictDoUpdate({
-              target: players.id,
-              set: { points: sql`excluded.points`, player_name: sql`excluded.player_name` },
-            }));
+            .update(players)
+            .set({ totalRoundsWon: sql`${players.totalRoundsWon} + 1` })
+            .where(inArray(players.id, playersWonRounds)));
+        playersWrongClaims.length &&
+          (await tx
+            .update(players)
+            .set({ totalWrongClaims: sql`${players.totalWrongClaims} + 1` })
+            .where(inArray(players.id, playersWrongClaims)));
       });
 
       // fetchPlayers();
@@ -64,6 +96,8 @@ function AddScores() {
       });
     }
   };
+
+  console.log({ currentRoundCount });
 
   return (
     <div className='p-6 '>

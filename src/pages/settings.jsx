@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowBigLeft, CircleX, Plus, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
 import { db } from '../db';
-import { groups, players } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { groups, players, rounds } from '../db/schema';
+import { and, asc, eq, sql } from 'drizzle-orm';
 import { AlertDialogWrapper } from '../components/alertDialog';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -16,7 +16,31 @@ function Settings() {
   const { toast } = useToast();
 
   const handleClearGame = async () => {
-    await db.update(players).set({ points: null }).where(eq(players.group_id, params.groupId));
+    await db.transaction(async (tx) => {
+      await tx
+        .update(players)
+        .set({ totalGamesPlayed: sql`${players.totalGamesPlayed} + 1` })
+        .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)));
+      const won = await db
+        .select({
+          player_name: players.player_name,
+          id: players.id,
+          points: sql`cast(sum(${rounds.points}) as int)`,
+        })
+        .from(players)
+        .leftJoin(rounds, eq(players.id, rounds.player_id))
+        .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)))
+        .groupBy(players.id)
+        .orderBy(({ points, player_name }) => [asc(points), asc(player_name)])
+        .limit(1);
+      console.log({ won });
+      won.length &&
+        (await tx
+          .update(players)
+          .set({ totalGamesWon: sql`${players.totalGamesWon} + 1` })
+          .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1), eq(players.id, won[0].id))));
+      await tx.delete(rounds).where(eq(rounds.group_id, params.groupId));
+    });
     toast({
       variant: 'green',
       title: 'Sores cleared',
@@ -28,6 +52,7 @@ function Settings() {
     await db.transaction(async (tx) => {
       await tx.delete(players).where(eq(players.group_id, params.groupId));
       await tx.delete(groups).where(eq(groups.group_id, params.groupId));
+      await tx.delete(rounds).where(eq(rounds.group_id, params.groupId));
     });
 
     toast({

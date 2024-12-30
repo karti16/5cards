@@ -11,6 +11,7 @@ import Layout from './components/layout.jsx';
 import AddPlayers from './pages/add-players.jsx';
 import AddScores from './pages/add-score.jsx';
 import SelectPlayers from './pages/select-players.jsx';
+import PlayerStats from './pages/player-stats.jsx';
 
 async function checkGroupExists({ params }) {
   const temp = await isGroupInDB(params.groupId);
@@ -30,6 +31,7 @@ const router = createBrowserRouter(
       <Route path='/group/:groupId/settings/add-players' element={<AddPlayers />} loader={checkGroupExists} />
       <Route path='/group/:groupId/add-scores' element={<AddScores />} loader={checkGroupExists} />
       <Route path='/group/:groupId/select-players' element={<SelectPlayers />} loader={checkGroupExists} />
+      <Route path='/group/:groupId/player/:player_id' element={<PlayerStats />} loader={checkGroupExists} />
       <Route path='/no-group' element={<NoGroup />} />
     </Route>,
   ),

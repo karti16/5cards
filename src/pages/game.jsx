@@ -1,28 +1,66 @@
 import { NavLink, useParams } from 'react-router';
 import Header from '../components/header';
 import { Button } from '@/components/ui/button';
-import { players } from '../db/schema';
-import { and, asc, eq } from 'drizzle-orm';
+import { players, rounds } from '../db/schema';
+import { and, asc, eq, or, sql } from 'drizzle-orm';
 import { useEffect, useState } from 'react';
 import { db } from '../db';
 import { cn } from '@/lib/utils';
-import { Check, FileInput } from 'lucide-react';
+import { Check, FileInput, List } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import ListViewScore from '../components/list-view-score';
+import TableViewScore from '../components/table-view-score';
 
 export default function Game() {
   let params = useParams();
   const [_players, _setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState('list');
+  const [_playersTableView, _setPlayersTableView] = useState([]);
+
   const fetchPlayers = async () => {
     try {
       const data = await db
-        .select()
+        .select({
+          player_name: players.player_name,
+          id: players.id,
+          points: sql`cast(sum(${rounds.points}) as int)`,
+        })
         .from(players)
+        .leftJoin(rounds, eq(players.id, rounds.player_id))
         .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)))
-        .orderBy(asc(players.points));
+        .groupBy(players.id)
+        .orderBy(({ points, player_name }) => [asc(points), asc(player_name)]);
+
+      console.log(data);
       _setPlayers(data);
-    } catch {
+    } catch (err) {
       //
+      console.log(err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  const fetchPlayersTableView = async () => {
+    try {
+      const data = await db
+        .select({
+          player_name: players.player_name,
+          id: players.id,
+          round_count: rounds.round_count,
+          points: rounds.points,
+        })
+        .from(players)
+        .leftJoin(rounds, eq(players.id, rounds.player_id))
+        .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)));
+
+      // console.log(data);
+      _setPlayersTableView(data);
+    } catch (err) {
+      //
+      console.log(err);
     } finally {
       // setLoading(false);
     }
@@ -30,8 +68,8 @@ export default function Game() {
 
   useEffect(() => {
     setLoading(true);
-
     fetchPlayers();
+    fetchPlayersTableView();
   }, [params]);
 
   // if (loading) {
@@ -45,9 +83,12 @@ export default function Game() {
   //     </div>
   //   );
   // }
+  const toggleView = () => {
+    setView(view === 'list' ? 'table' : 'list');
+  };
   return (
     <div className='p-6'>
-      <Header groupId={params.groupId} />
+      <Header groupId={params.groupId} view={view} toggleView={toggleView} />
       <div className='flex justify-between pt-10'>
         <NavLink to='add-scores'>
           <Button variant='ghost' className='focus:ring-2 focus:ring-green-800'>
@@ -63,50 +104,8 @@ export default function Game() {
           </Button>
         </NavLink>
       </div>
-      <div className='pt-10'>
-        {_players.length === 0 ? (
-          <p>No players found</p>
-        ) : (
-          <>
-            {_players
-              .filter((i) => i.points < 100)
-              .map((i, index) => {
-                return (
-                  <div
-                    key={i.id}
-                    className={cn(
-                      'flex gap-5 content-center items-center pl-2 p-3 justify-between',
-                      index === 0 &&
-                        _players.some((i) => i.points) &&
-                        'border border-green-600 bg-[#14582679] rounded-2xl',
-                    )}
-                  >
-                    <div className='flex gap-5 content-center  items-center'>
-                      <div className='items-center content-center text-center flex'>{i.points}</div>
-                      <div className=''>{i.player_name}</div>
-                    </div>
-                    {index === 0 && _players.some((i) => i.points) && <div>🎖🎖🎖</div>}
-                  </div>
-                );
-              })}
-            <span className='text-gray-600 text-sm'>
-              No. of players still in game : {_players.filter((i) => i.points < 100).length}
-            </span>
-            <hr className='h-px my-4 bg-gray-200 border-0 dark:bg-gray-700'></hr>
-            <p className='flex pb-5'>Out of the Game</p>
-            {_players
-              .filter((i) => i.points >= 100)
-              .map((i) => {
-                return (
-                  <div key={i.id} className={cn('flex gap-5 content-center items-center pl-2 p-3 text-gray-600')}>
-                    <div className='items-center content-center text-center flex'>{i.points}</div>
-                    <div className=''>{i.player_name}</div>
-                  </div>
-                );
-              })}
-          </>
-        )}
-      </div>
+
+      {view === 'list' ? <ListViewScore _players={_players} /> : <TableViewScore _players={_playersTableView} />}
     </div>
   );
 }
