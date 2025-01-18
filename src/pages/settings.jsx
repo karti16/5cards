@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowBigLeft, CircleX, Plus, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';

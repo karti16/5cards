@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider, redirect } from 'react-router';
@@ -12,6 +13,7 @@ import AddPlayers from './pages/add-players.jsx';
 import AddScores from './pages/add-score.jsx';
 import SelectPlayers from './pages/select-players.jsx';
 import PlayerStats from './pages/player-stats.jsx';
+import ErrorBoundary from './pages/error-boundary.jsx';
 
 async function checkGroupExists({ params }) {
   const temp = await isGroupInDB(params.groupId);
@@ -23,7 +25,7 @@ async function checkGroupExists({ params }) {
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<Layout />}>
+    <Route path='/' element={<Layout />} errorElement={<ErrorBoundary />}>
       <Route index element={<Home />} />
       <Route path='/about' element={<About />} />
       <Route path='/group/:groupId' element={<Game />} loader={checkGroupExists} />

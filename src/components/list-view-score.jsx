@@ -1,13 +1,7 @@
-import { NavLink, useParams } from 'react-router';
-import Header from './header';
-import { Button } from '@/components/ui/button';
-import { players, rounds } from '../db/schema';
-import { and, asc, eq, sql } from 'drizzle-orm';
-import { useEffect, useState } from 'react';
-import { db } from '../db';
+/* eslint react/prop-types: 0 */
+import React from 'react';
+import { NavLink } from 'react-router';
 import { cn } from '@/lib/utils';
-import { Check, FileInput } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ListViewScore({ _players }) {
   return (
