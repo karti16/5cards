@@ -1,37 +1,28 @@
+import React from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { players, rounds } from '../db/schema';
-import { and, asc, eq, or, sql } from 'drizzle-orm';
+import { players } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { useEffect, useState } from 'react';
 import { db } from '../db';
-import { Button } from '@/components/ui/button';
 import { ArrowBigLeft } from 'lucide-react';
 
 export default function PlayerStats() {
   let params = useParams();
   const [_players, _setPlayers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('table');
-  const [_playersTableView, _setPlayersTableView] = useState([]);
   const navigate = useNavigate();
 
   const fetchPlayers = async () => {
     try {
       const data = await db.select().from(players).where(eq(players.id, params.player_id));
       _setPlayers(data[0]);
-    } catch (err) {
+    } catch {
       //
-      console.log(err);
-    } finally {
-      // setLoading(false);
     }
   };
 
   useEffect(() => {
-    setLoading(true);
     fetchPlayers();
   }, [params]);
-
-  console.log({ _players });
 
   return (
     <div className='p-6'>

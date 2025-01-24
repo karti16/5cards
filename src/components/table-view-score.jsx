@@ -1,13 +1,6 @@
-import { NavLink, useParams } from 'react-router';
-import Header from './header';
-import { Button } from '@/components/ui/button';
-import { players, rounds } from '../db/schema';
-import { and, asc, eq, max, sql } from 'drizzle-orm';
-import { useEffect, useState } from 'react';
-import { db } from '../db';
+/* eslint-disable react/prop-types */
+import React from 'react';
 import { cn } from '@/lib/utils';
-import { Check, FileInput } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function TableViewScore({ _players }) {
@@ -56,6 +49,7 @@ export default function TableViewScore({ _players }) {
             <div className='row'>
               {firstCol.map((fc, fidx, farr) => (
                 <div
+                  key={fidx}
                   className={cn('p-1  border-[1px]', fidx === farr.length - 1 && ' border-green-600 bg-[#1458261c]')}
                 >
                   {fc}
@@ -64,11 +58,11 @@ export default function TableViewScore({ _players }) {
             </div>
             {scores.map((sc, i) => {
               return (
-                <div className='row'>
+                <div key={i} className='row'>
                   {sc.map((j, idx, arr) => {
-                    // console.log(j);
                     return (
                       <div
+                        key={idx}
                         className={cn(
                           'cell px-2 p-1 border-[1px]',
                           j === 0 && 'text-green-600',

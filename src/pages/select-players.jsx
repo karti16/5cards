@@ -41,7 +41,6 @@ function SelectPlayers() {
       player_name: i.player_name,
       isPlaying: _players[i.id],
     }));
-    console.log(data);
     try {
       await db.transaction(async (tx) => {
         data.length &&
@@ -59,9 +58,7 @@ function SelectPlayers() {
       });
       queryClient.invalidateQueries(['selectPlayers']);
       navigate(-1);
-    } catch (err) {
-      //
-      console.log(err.message);
+    } catch {
       toast({
         variant: 'red',
         title: 'Cannot select player',

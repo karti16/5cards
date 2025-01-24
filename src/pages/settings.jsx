@@ -8,6 +8,7 @@ import { and, asc, eq, sql } from 'drizzle-orm';
 import { AlertDialogWrapper } from '../components/alertDialog';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 function Settings() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Settings() {
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
   const [deleteGroupDialogOpen, setDeleteGroupDialogOpen] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleClearGame = async () => {
     await db.transaction(async (tx) => {
@@ -34,7 +36,6 @@ function Settings() {
         .groupBy(players.id)
         .orderBy(({ points, player_name }) => [asc(points), asc(player_name)])
         .limit(1);
-      console.log({ won });
       won.length &&
         (await tx
           .update(players)
@@ -42,10 +43,13 @@ function Settings() {
           .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1), eq(players.id, won[0].id))));
       await tx.delete(rounds).where(eq(rounds.group_id, params.groupId));
     });
+    queryClient.invalidateQueries(['playerScore', 'currentRoundCount']);
+    queryClient.removeQueries();
     toast({
       variant: 'green',
       title: 'Sores cleared',
     });
+    navigate(-1);
   };
   const handleDeleteGroup = async () => {
     await db.update(players).set({ points: null }).where(eq(players.group_id, params.groupId));
