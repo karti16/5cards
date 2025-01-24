@@ -11,6 +11,5 @@ export const db = drizzle(client);
 
 export const isGroupInDB = async (groupId) => {
   const group = await db.select().from(groups).where(eq(groups.group_id, groupId));
-  console.log(group);
   return group.length > 0;
 };

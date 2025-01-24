@@ -41,7 +41,6 @@ export default function ListViewScore({ _players }) {
           {_players
             .filter((i) => i.points >= 100)
             .map((i) => {
-              console.log('ddddd', i);
               return (
                 <div key={i.id} className={cn('flex gap-5 content-center items-center pl-2 p-3 text-gray-600')}>
                   <div className='items-center content-center text-center flex'>{i.points}</div>

@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { db, isGroupInDB } from '../db';
 import { Button } from '@/components/ui/button';
@@ -52,9 +53,7 @@ function Home() {
     setLoading(true);
     try {
       const tempGroupExists = await isGroupInDB(groupId);
-      console.log(tempGroupExists);
       if (tempGroupExists) {
-        console.log('ppppp');
         s_setGroupId(groupId);
         navigate(`/group/${groupId}`);
       } else {
@@ -63,7 +62,6 @@ function Home() {
       }
     } catch {
       //
-    } finally {
     }
   };
 

@@ -5,7 +5,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function TableViewScore({ _players }) {
   if (_players.length === 0) return <p>No players found</p>;
-  console.log(_players);
 
   let playersName = _players.filter((o, index, arr) => arr.findIndex((item) => item.id === o.id) === index);
   const temp_scores = playersName.map((i) => {
@@ -39,7 +38,6 @@ export default function TableViewScore({ _players }) {
     });
 
   firstCol.push('Total');
-  console.log({ scores, maxRound });
 
   return (
     <ScrollArea className='w-full whitespace-nowrap'>

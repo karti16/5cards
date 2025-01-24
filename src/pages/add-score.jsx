@@ -60,8 +60,7 @@ function AddScores() {
             .set({ totalWrongClaims: sql`${players.totalWrongClaims} + 1` })
             .where(inArray(players.id, playersWrongClaims)));
       });
-    } catch (err) {
-      console.log(err.message);
+    } catch () {
       toast({
         variant: 'red',
         title: 'Name already exist',
@@ -69,7 +68,6 @@ function AddScores() {
     }
   };
 
-  console.log('add-score.jsx (LineCode 58):', currentRoundCount);
 
   const handleUndoScore = async () => {
     await db.delete(rounds).where(eq(rounds.round_count, currentRoundCount));
