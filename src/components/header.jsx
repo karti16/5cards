@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
 import { NavLink } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Grid3x3, List, LogOut, Settings, Users } from 'lucide-react';

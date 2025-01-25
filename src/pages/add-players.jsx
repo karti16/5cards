@@ -33,7 +33,6 @@ function AddPlayers() {
     fetchPlayers();
   }, [params]);
 
-
   const handlePlayer = (e, id) => {
     const { value } = e.target;
     _setPlayers(_players.map((user) => (user.id === id ? { ...user, player_name: value } : user)));
@@ -68,7 +67,7 @@ function AddPlayers() {
         variant: 'green',
         title: 'Saved',
       });
-    } catch () {
+    } catch {
       toast({
         variant: 'red',
         title: 'Name already exist',

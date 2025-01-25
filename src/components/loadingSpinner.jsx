@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import React from 'react';
 import { RotateCw } from 'lucide-react';
 
 export default function LoadingSpinner({ size = 6, color = 'text-gray-500' }) {

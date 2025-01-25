@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const initialState = {

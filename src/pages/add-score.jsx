@@ -60,14 +60,13 @@ function AddScores() {
             .set({ totalWrongClaims: sql`${players.totalWrongClaims} + 1` })
             .where(inArray(players.id, playersWrongClaims)));
       });
-    } catch () {
+    } catch {
       toast({
         variant: 'red',
         title: 'Name already exist',
       });
     }
   };
-
 
   const handleUndoScore = async () => {
     await db.delete(rounds).where(eq(rounds.round_count, currentRoundCount));
