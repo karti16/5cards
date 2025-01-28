@@ -2,7 +2,6 @@
 import React from 'react';
 import { NavLink } from 'react-router';
 import { cn } from '@/lib/utils';
-import veliya from '@/assets/veliya.jpeg';
 
 export default function ListViewScore({ _players }) {
   return (
@@ -39,11 +38,6 @@ export default function ListViewScore({ _players }) {
           </span>
           <hr className='h-px my-4 bg-gray-200 border-0 dark:bg-gray-700'></hr>
           <p className='flex pb-5'>Out of the Game</p>
-          {_players.filter((i) => i.points >= 100).length > 0 && (
-            <div className='w-full '>
-              <img src={veliya} alt='Image' className='rounded-md object-cover w-fit' />
-            </div>
-          )}
           {_players
             .filter((i) => i.points >= 100)
             .map((i) => {
