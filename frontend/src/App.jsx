@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider, redirect } from 'react-router';
@@ -16,7 +16,8 @@ import PlayerStats from './pages/player-stats.jsx';
 import ErrorBoundary from './pages/error-boundary.jsx';
 
 async function checkGroupExists({ params }) {
-  const temp = await isGroupInDB(params.groupId);
+
+  const temp = false
   if (!temp) {
     return redirect('/no-group');
   }

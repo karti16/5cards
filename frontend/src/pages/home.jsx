@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db, isGroupInDB } from '../db';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,11 @@ import { useGroupIdStore } from '../store/index';
 import LoadingSpinner from '../components/loadingSpinner';
 
 function Home() {
+
+useEffect(() => {
+  fetch('/api/test')
+},[]);
+
   let navigate = useNavigate();
   const [isGroupExist, setIsGroupExist] = useState(false);
   const [groupId, setGroupId] = useState('');
