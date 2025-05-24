@@ -11,9 +11,9 @@ const groupRouter = require('./routes/group.js');
 const playerRouter = require('./routes/player.js');
 const roundsRouter = require('./routes/rounds.js');
 
-app.use('/group', groupRouter);
-app.use('/player', playerRouter);
-app.use('/round', roundsRouter);
+app.use('/api/group', groupRouter);
+app.use('/api/player', playerRouter);
+app.use('/api/round', roundsRouter);
 
 
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
