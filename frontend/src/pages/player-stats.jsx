@@ -1,10 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { players } from '../db/schema';
-import { eq } from 'drizzle-orm';
 import { useEffect, useState } from 'react';
-import { db } from '../db';
 import { ArrowBigLeft } from 'lucide-react';
+import axios from 'axios';  
 
 export default function PlayerStats() {
   let params = useParams();
@@ -13,8 +11,9 @@ export default function PlayerStats() {
 
   const fetchPlayers = async () => {
     try {
-      const data = await db.select().from(players).where(eq(players.id, params.player_id));
-      _setPlayers(data[0]);
+      const _data = await axios.get(`/api/player/score/${params.player_id}`);
+      const data = _data.data;
+      _setPlayers(data);
     } catch {
       //
     }

@@ -2,49 +2,32 @@ import React from 'react';
 import { NavLink, useParams } from 'react-router';
 import Header from '../components/header';
 import { Button } from '@/components/ui/button';
-import { players, rounds } from '../db/schema';
-import { and, asc, eq, sql } from 'drizzle-orm';
 import { useState } from 'react';
-import { db } from '../db';
 import { Check, FileInput } from 'lucide-react';
-
 import ListViewScore from '../components/list-view-score';
 import TableViewScore from '../components/table-view-score';
 import { useQuery } from '@tanstack/react-query';
 import PlayerLoader from '../components/player-loader';
+import axios from 'axios';
 
 export default function Game() {
   let params = useParams();
   const [view, setView] = useState('list');
 
   const fetchPlayers = async () => {
-    const data = await db
-      .select({
-        player_name: players.player_name,
-        id: players.id,
-        points: sql`cast(sum(${rounds.points}) as int)`,
-      })
-      .from(players)
-      .leftJoin(rounds, eq(players.id, rounds.player_id))
-      .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)))
-      .groupBy(players.id)
-      .orderBy(({ points, player_name }) => [asc(points), asc(player_name)]);
-    return data;
+    const data = await axios.post(`/api/player/score`, {
+      groupId: params.groupId,
+      view: 'grid-view',
+    });
+    return data.data;
   };
 
   const fetchPlayersTableView = async () => {
-    const data = await db
-      .select({
-        player_name: players.player_name,
-        id: players.id,
-        round_count: rounds.round_count,
-        points: rounds.points,
-      })
-      .from(players)
-      .leftJoin(rounds, eq(players.id, rounds.player_id))
-      .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)));
-
-    return data;
+    const data = await axios.post(`/api/player/score`, {
+      groupId: params.groupId,
+      view: 'table-view',
+    });
+    return data.data;
   };
 
   const { isPending: fetchPlayersTableViewIsPending, data: _playersTableView } = useQuery({

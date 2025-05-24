@@ -3,13 +3,11 @@ import { Button } from '@/components/ui/button';
 import { ArrowBigLeft, CirclePlus, Info, Save, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router';
-import { db } from '../db';
-import { players } from '../db/schema';
-import { eq, inArray, sql } from 'drizzle-orm';
 import { usePlayersStore } from '../store';
 import { Input } from '@/components/ui/input';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
+import axios from 'axios';
 
 function capitalizeName(name) {
   return name.replace(/\b(\w)/g, (s) => s.toUpperCase());
@@ -24,7 +22,8 @@ function AddPlayers() {
   const { toast } = useToast();
 
   const fetchPlayers = async () => {
-    const data = await db.select().from(players).where(eq(players.group_id, params.groupId));
+    const _data = await axios.get(`/api/player/${params.groupId}`);
+    const data = _data.data;
     _setPlayers(data);
     s_setPlayers(data);
   };
@@ -52,13 +51,9 @@ function AddPlayers() {
       .filter((i) => i.player_name)
       .map((i) => ({ id: i.id, group_id: i.group_id, player_name: capitalizeName(i.player_name) }));
     try {
-      await db.transaction(async (tx) => {
-        data.length &&
-          (await tx
-            .insert(players)
-            .values(data)
-            .onConflictDoUpdate({ target: players.id, set: { player_name: sql`excluded.player_name` } }));
-        deletePlayer.length && (await tx.delete(players).where(inArray(players.id, deletePlayer)));
+      await axios.post(`/api/player`, {
+        insertPlayer: data,
+        deletePlayer: deletePlayer,
       });
       fetchPlayers();
       setDeletePlayer([]);

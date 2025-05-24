@@ -1,19 +1,16 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { db, isGroupInDB } from '../db';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { groups } from '../db/schema';
+// import { groups } from '../../../server/db/schema';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router';
 import { useGroupIdStore } from '../store/index';
 import LoadingSpinner from '../components/loadingSpinner';
+import axios from 'axios';
 
 function Home() {
 
-useEffect(() => {
-  fetch('/api/test')
-},[]);
 
   let navigate = useNavigate();
   const [isGroupExist, setIsGroupExist] = useState(false);
@@ -34,7 +31,7 @@ useEffect(() => {
 
     try {
       const data = { group_id: groupId, created_at: new Date() };
-      await db.insert(groups).values(data);
+      await axios.post(`/api/group`, { data });
       setIsGroupExist(false);
       setGroupId('');
       setNotValidGroupId(false);
@@ -57,7 +54,8 @@ useEffect(() => {
     setIsGroupExist(false);
     setLoading(true);
     try {
-      const tempGroupExists = await isGroupInDB(groupId);
+      const _tempGroupsExists = await axios.get(`/api/group/findById/${groupId}`);
+      const tempGroupExists = _tempGroupsExists.data.length > 0;
       if (tempGroupExists) {
         s_setGroupId(groupId);
         navigate(`/group/${groupId}`);
@@ -87,7 +85,7 @@ useEffect(() => {
       <div className='card flex gap-2'>
         <Button
           variant='outline'
-          onClick={findGame}
+          onClick={findGame} 
           className='focus:ring-2 focus:ring-green-800 grid [grid-template-areas:"stack"] place-content-center'
         >
           <span

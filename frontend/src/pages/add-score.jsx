@@ -3,15 +3,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowBigLeft, Save, Undo2, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { db } from '../db';
-import { players, rounds } from '../db/schema';
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '../lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertDialogWrapper } from '../components/alertDialog';
 import PlayerLoader from '../components/player-loader';
+import axios from 'axios';
 
 function AddScores() {
   let params = useParams();
@@ -22,12 +20,8 @@ function AddScores() {
   const queryClient = useQueryClient();
 
   const fetchCurrentRoundCount = async () => {
-    const data = await db
-      .select({ round_count: rounds.round_count })
-      .from(rounds)
-      .where(eq(rounds.group_id, params.groupId))
-      .orderBy(desc(rounds.id));
-    return data[0]?.round_count ?? 0;
+    const _data = await axios.post(`/api/round/currentRoundCount`, { groupId: params.groupId });
+    return _data.data;
   };
 
   const { data: currentRoundCount } = useQuery({
@@ -47,18 +41,10 @@ function AddScores() {
     const playersWrongClaims = data.filter((i) => i.points === 40).map((i) => i.player_id);
 
     try {
-      await db.transaction(async (tx) => {
-        data.length && (await tx.insert(rounds).values(data));
-        playersWonRounds.length &&
-          (await tx
-            .update(players)
-            .set({ totalRoundsWon: sql`${players.totalRoundsWon} + 1` })
-            .where(inArray(players.id, playersWonRounds)));
-        playersWrongClaims.length &&
-          (await tx
-            .update(players)
-            .set({ totalWrongClaims: sql`${players.totalWrongClaims} + 1` })
-            .where(inArray(players.id, playersWrongClaims)));
+      await axios.post(`/api/round/saveScore`, {
+        playersWonRounds,
+        playersWrongClaims,
+        playerScore: data,
       });
     } catch {
       toast({
@@ -69,7 +55,7 @@ function AddScores() {
   };
 
   const handleUndoScore = async () => {
-    await db.delete(rounds).where(eq(rounds.round_count, currentRoundCount));
+    await axios.delete(`/api/round/${currentRoundCount}`);
   };
 
   const saveScoreMutation = useMutation({
@@ -92,25 +78,14 @@ function AddScores() {
   });
 
   const fetchPlayers = async () => {
-    const data = await db
-      .select({
-        player_name: players.player_name,
-        id: players.id,
-        points: sql`cast(sum(${rounds.points}) as int)`,
-        group_id: players.group_id,
-      })
-      .from(players)
-      .leftJoin(rounds, eq(players.id, rounds.player_id))
-      .where(and(eq(players.group_id, params.groupId), eq(players.isPlaying, 1)))
-      .groupBy(players.id);
-
+    const _data = await axios.post(`/api/round/playerScore`, { groupId: params.groupId });
+    const data = _data.data;
     _setPlayers(
       data.reduce((acc, curr) => {
         acc[curr.id] = '';
         return acc;
       }, {}),
     );
-
     return data;
   };
 

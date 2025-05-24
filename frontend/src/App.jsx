@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider, redirect } from 'react-router';
@@ -7,18 +7,19 @@ import About from './pages/about.jsx';
 import Game from './pages/game.jsx';
 import Settings from './pages/settings.jsx';
 import NoGroup from './pages/no-group.jsx';
-import { isGroupInDB } from './db/index.js';
 import Layout from './components/layout.jsx';
 import AddPlayers from './pages/add-players.jsx';
 import AddScores from './pages/add-score.jsx';
 import SelectPlayers from './pages/select-players.jsx';
 import PlayerStats from './pages/player-stats.jsx';
 import ErrorBoundary from './pages/error-boundary.jsx';
+import axios from 'axios';
 
 async function checkGroupExists({ params }) {
 
-  const temp = false
-  if (!temp) {
+  const _tempGroupsExists = await axios.get(`/api/group/findById/${params.groupId}`);
+  const tempGroupExists = _tempGroupsExists.data.length > 0;
+  if (!tempGroupExists) {
     return redirect('/no-group');
   }
   return params;

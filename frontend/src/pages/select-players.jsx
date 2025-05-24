@@ -3,13 +3,11 @@ import { Button } from '@/components/ui/button';
 import { ArrowBigLeft, CircleCheck, Save, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { db } from '../db';
-import { players } from '../db/schema';
-import { eq, sql } from 'drizzle-orm';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PlayerLoader from '../components/player-loader';
+import axios from 'axios';
 
 function SelectPlayers() {
   let params = useParams();
@@ -19,7 +17,8 @@ function SelectPlayers() {
   const queryClient = useQueryClient();
 
   const fetchPlayers = async () => {
-    const data = await db.select().from(players).where(eq(players.group_id, params.groupId));
+    const _data = await axios.get(`/api/player/${params.groupId}`);
+    const data = _data.data;
     _setPlayers(
       data.reduce((acc, curr) => {
         acc[curr.id] = curr.isPlaying;
@@ -42,19 +41,8 @@ function SelectPlayers() {
       isPlaying: _players[i.id],
     }));
     try {
-      await db.transaction(async (tx) => {
-        data.length &&
-          (await tx
-            .insert(players)
-            .values(data)
-            .onConflictDoUpdate({
-              target: players.id,
-              set: {
-                points: sql`excluded.points`,
-                player_name: sql`excluded.player_name`,
-                isPlaying: sql`excluded.isPlaying`,
-              },
-            }));
+      await axios.post(`/api/player/select`, {
+        selectPlayers: data,
       });
       queryClient.invalidateQueries(['selectPlayers']);
       navigate(-1);
