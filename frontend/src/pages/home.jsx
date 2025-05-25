@@ -81,7 +81,7 @@ function Home() {
         className={cn(isGroupExist && 'border-red-500')}
       />
       {!!notValidGroupId && <p className='text-red-300 text-sm pt-2'>An alphanumeric word with 🖐 5 characters</p>}
-      {!!isGroupExist && <p className='text-red-500 text-sm pt-2'>Choose another name</p>}
+      {!!isGroupExist && <p className='text-red-500 text-sm pt-2'>Group not found</p>}
       <div className='card flex gap-2'>
         <Button
           variant='outline'
