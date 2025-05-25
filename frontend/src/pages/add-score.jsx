@@ -118,7 +118,7 @@ function AddScores() {
               <Button
                 onClick={() => setUndoScoreDialogue(true)}
                 disabled={undoScoreMutation.isPending}
-                className='bg-red-400'
+                className={cn('bg-red-500 hover:bg-red-600 text-white mb-4')}
               >
                 <Undo2 />
                 Undo last round
