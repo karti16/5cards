@@ -48,13 +48,17 @@ function Home() {
   };
 
   const findGame = async () => {
+    if (groupId.length == 0) return;
+
     setNotValidGroupId(false);
     setIsGroupExist(false);
     setLoading(true);
+
     try {
       const _tempGroupsExists = await axios.get(
         `/api/group/findById/${groupId}`,
       );
+
       const tempGroupExists = _tempGroupsExists.data.length > 0;
       if (tempGroupExists) {
         s_setGroupId(groupId);
