@@ -72,6 +72,12 @@ function Home() {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      findGame();
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen justify-center items-center p-6">
       <h1 className="pb-10 text-[30px]">
@@ -83,6 +89,7 @@ function Home() {
         value={groupId}
         placeholder="Unique name"
         className={cn(isGroupExist && "border-red-500")}
+        onKeyDown={handleKeyDown}
       />
       {!!notValidGroupId && (
         <p className="text-red-300 text-sm pt-2">
