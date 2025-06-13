@@ -40,6 +40,8 @@ function Home() {
     }
   };
 
+  console.log("dsdsd ");
+
   const handleInput = (e) => {
     const { value } = e.target;
     setGroupId(value.toLowerCase());
