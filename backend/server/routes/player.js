@@ -2,7 +2,7 @@ const { eq, sql, and, asc, inArray } = require('drizzle-orm');
 const express = require('express');
 const router = express.Router();
 const db = require('../db/index.js').db;
-const { groups, players, rounds } = require('../db/schema.ts');
+const { groups, players, rounds } = require('../db/schema.js');
 
 const findPlayersGridView = async (groupId) => {
   const _players = await db

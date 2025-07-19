@@ -40,8 +40,6 @@ function Home() {
     }
   };
 
-  console.log("dsdsd ");
-
   const handleInput = (e) => {
     const { value } = e.target;
     setGroupId(value.toLowerCase());
@@ -84,7 +82,7 @@ function Home() {
     <div className="flex flex-col min-h-screen justify-center items-center p-6">
       <h1 className="pb-10 text-[30px]">
         {" "}
-        🖐 <span className="text-green-500">5 card</span>{" "}
+        🖐 <span className="text-green-500">5 cards</span>{" "}
       </h1>
       <Input
         onChange={handleInput}

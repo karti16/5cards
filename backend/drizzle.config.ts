@@ -1,5 +1,5 @@
 export default {
-  schema: "./server/db/schema.ts",
+  schema: "./server/db/schema.js",
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: {

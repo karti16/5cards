@@ -2,7 +2,7 @@ const { eq, sql, and, asc, inArray, desc } = require('drizzle-orm');
 const express = require('express');
 const router = express.Router();
 const db = require('../db/index.js').db;
-const { groups, players, rounds } = require('../db/schema.ts');
+const { groups, players, rounds } = require('../db/schema.js');
 
 router.post('/currentRoundCount', async (req, res) => {
   const { groupId } = req.body;
