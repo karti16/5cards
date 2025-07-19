@@ -8,10 +8,11 @@
     root * /srv
     encode gzip
     file_server
+    try_files {path} /index.html
 
 
-    handle_errors {
-        respond "{err.status_code} {err.status_text}"
-    }
+    # handle_errors {
+    #    respond "{err.status_code} {err.status_text}"
+    # }
 
 }

@@ -24,7 +24,6 @@ const db = drizzle(client, { schema });
 })();
 
 const isGroupInDB = async (groupId = "knft1") => {
-  console.log("Checking if group exists in DB:", groupId);
   const group = await db
     .select()
     .from(groups)
