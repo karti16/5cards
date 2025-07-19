@@ -1,11 +1,11 @@
-import { integer, pgTable, text, unique, serial, boolean } from 'drizzle-orm/pg-core';
+const { integer, pgTable, text, unique, serial, boolean } = require('drizzle-orm/pg-core');
 
-export const groups = pgTable('groups', {
+const groups = pgTable('groups', {
   id: serial().primaryKey(),
   group_id: text().notNull().unique(),
 });
 
-export const players = pgTable(
+const players = pgTable(
   'players',
   {
     id: text().notNull().primaryKey(),
@@ -22,7 +22,7 @@ export const players = pgTable(
   }),
 );
 
-export const rounds = pgTable('rounds', {
+const rounds = pgTable('rounds', {
   id: serial().primaryKey(),
   round_count: integer(),
   group_id: text('group_id').references(() => groups.group_id),
@@ -30,3 +30,8 @@ export const rounds = pgTable('rounds', {
   points: integer(),
 });
 
+module.exports = {
+  groups,
+  players,
+  rounds,
+};

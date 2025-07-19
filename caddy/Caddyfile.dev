@@ -1,0 +1,20 @@
+{
+    local_certs
+}
+
+5cards.localhost {
+    encode gzip
+    reverse_proxy frontend:8080
+
+    # Reverse proxy all /api/* requests to the backend at port 3000
+    handle /api/* {
+        reverse_proxy http://backend:3000
+    }
+
+    handle_errors {
+        respond "{err.status_code} {err.status_text}"
+    }
+
+    # Handle client-side routing (SPA fallback)
+    # try_files {path} /index.html
+}

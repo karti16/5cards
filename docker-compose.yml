@@ -1,0 +1,63 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    restart: unless-stopped
+    env_file: ./backend/.env
+    container_name: 5cards-backend
+    command: sh -c "npx drizzle-kit migrate && npx drizzle-kit push && node dist/index.js"
+    depends_on:
+      - db
+    networks:
+      - five_cards_network
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    restart: unless-stopped
+    container_name: 5cards-frontend
+    depends_on:
+      - backend
+    networks:
+      - five_cards_network
+
+  db:
+    image: postgres:16
+    container_name: 5cards-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=five_cards
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - five_cards_network
+
+  caddy:
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - five_cards_network
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+networks:
+  five_cards_network:
+    driver: bridge

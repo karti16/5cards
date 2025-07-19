@@ -2,11 +2,12 @@ const { eq } = require('drizzle-orm');
 const express = require('express');
 const router = express.Router();
 const db = require('../db/index.js').db;
-const { groups, players, rounds } = require('../db/schema.ts');
+const { groups, players, rounds } = require('../db/schema.js');
 
 router.post('/', async (req, res) => {
   try {
     const data = req.body.data;
+    
     await db.insert(groups).values(data);
     return res.send({
       message: 'Group created successfully',
