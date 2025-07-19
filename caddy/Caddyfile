@@ -46,6 +46,10 @@ www.{$DOMAIN_NAME:invalid} {
         reverse_proxy http://backend:3000
     }
 
+    handle /hooks/* {
+        reverse_proxy 0.0.0.0:9000
+    }
+
     handle_errors {
         respond "{err.status_code} {err.status_text}"
     }
