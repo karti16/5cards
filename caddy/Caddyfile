@@ -47,7 +47,7 @@ www.{$DOMAIN_NAME:invalid} {
     }
 
     handle /hooks/* {
-        reverse_proxy 0.0.0.0:9000
+        reverse_proxy localhost:9000
     }
 
     handle_errors {
