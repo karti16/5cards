@@ -1,5 +1,5 @@
 services:
-  backend:
+  five_cards_backend:
     build:
       context: ./backend
       target: development
@@ -10,12 +10,12 @@ services:
       - ./backend:/app
       - /app/node_modules
     depends_on:
-      - db
+      - five_cards_db
     command: sh -c "npx drizzle-kit migrate && npx drizzle-kit push && npm run dev"
     networks:
       - five_cards_network
 
-  frontend:
+  five_cards_frontend:
     build:
       context: ./frontend
       target: development
@@ -27,11 +27,11 @@ services:
       - /app/node_modules
     command: npm run dev -- --host
     depends_on:
-      - backend
+      - five_cards_backend
     networks:
       - five_cards_network
 
-  db:
+  five_cards_db:
     image: postgres:16
     container_name: 5cards-db
     restart: always
@@ -44,25 +44,9 @@ services:
     networks:
       - five_cards_network
 
-  caddy:
-    image: caddy:2-alpine
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./caddy/Caddyfile.dev:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - five_cards_network
-    depends_on:
-      - backend
-      - frontend
-
 volumes:
   postgres_data:
-  caddy_data:
-  caddy_config:
 networks:
   five_cards_network:
-    driver: bridge
+    external: true
+      
