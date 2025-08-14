@@ -82,7 +82,7 @@ function Home() {
     <div className="flex flex-col min-h-screen justify-center items-center p-6">
       <h1 className="pb-10 text-[30px]">
         {" "}
-        🖐 <span className="text-green-500">5 cards</span>{" "}
+        🖐 <span className="text-green-500">5 cards test</span>{" "}
       </h1>
       <Input
         onChange={handleInput}
